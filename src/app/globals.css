@@ -22,9 +22,9 @@
   --color-subtle: #8c857f;
 
   /* Accent */
-  --color-accent: #f97316;
-  --color-accent-hover: #fb923c;
-  --color-accent-foreground: #1c0a00;
+  --color-accent: #2dd4bf;
+  --color-accent-hover: #5eead4;
+  --color-accent-foreground: #042f2e;
 
   /* Layout */
   --container-content: 72rem;

@@ -9,7 +9,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: site.name,
+  title: site.title,
+  description: site.description,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
