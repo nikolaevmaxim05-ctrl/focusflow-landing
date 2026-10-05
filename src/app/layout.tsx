@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${manrope.variable} antialiased`}>
-      <body className="font-sans">{children}</body>
+      <body id="top" className="font-sans">{children}</body>
     </html>
   );
 }

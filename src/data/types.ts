@@ -56,20 +56,13 @@ export interface SectionIntro {
   subtitle?: string;
 }
 
-export type IllustrationName =
-  "timer" | "minimal" | "stats" | "sounds" | "streak" | "themes";
-
-/** Slide background: a photo from /public or an illustration drawn in code. */
-export type FeatureBackground =
-  | { type: "photo"; image: ImageAsset }
-  | { type: "illustration"; name: IllustrationName };
-
 export interface Feature {
   /** Any icon exported by lucide-react (https://lucide.dev/icons). */
   icon: LucideIcon;
   title: string;
   description: string;
-  background: FeatureBackground;
+  /** Background picture shown behind the slide, from /public. */
+  image: ImageAsset;
 }
 
 export interface FeaturesContent {
@@ -82,9 +75,6 @@ export interface FeaturesContent {
 export interface Step {
   title: string;
   description: string;
-  /** Any icon exported by lucide-react (https://lucide.dev/icons). */
-  icon: LucideIcon;
-  illustration: IllustrationName;
   image: ImageAsset;
 }
 

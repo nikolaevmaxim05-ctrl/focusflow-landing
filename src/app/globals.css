@@ -45,8 +45,8 @@ body {
 /* Fades all four edges of an element into whatever is behind it. */
 .soft-edges {
   mask-image:
-    linear-gradient(to right, transparent, black 22%, black 78%, transparent),
-    linear-gradient(to bottom, transparent, black 22%, black 78%, transparent);
+    linear-gradient(to right, transparent, black 8%, black 92%, transparent),
+    linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
   mask-composite: intersect;
 }
 
