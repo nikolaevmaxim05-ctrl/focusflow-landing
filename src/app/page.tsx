@@ -2,6 +2,7 @@ import { Features } from "@/components/sections/Features";
 import { Header } from "@/components/sections/Header";
 import { Hero } from "@/components/sections/Hero";
 import { HowItWorks } from "@/components/sections/HowItWorks";
+import { Pricing } from "@/components/sections/Pricing";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
         <Hero />
         <Features />
         <HowItWorks />
+        <Pricing />
       </main>
     </>
   );

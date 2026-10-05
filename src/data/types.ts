@@ -82,3 +82,22 @@ export interface HowItWorksContent {
   intro: SectionIntro;
   steps: Step[];
 }
+
+export interface Plan {
+  name: string;
+  /** Price per period; 0 is shown as a free plan price. */
+  price: number;
+  /** Label of the highlighted plan, e.g. "Most popular". Omit for regular plans. */
+  badge?: string;
+  features: string[];
+  cta: CallToAction;
+}
+
+export interface PricingContent {
+  intro: SectionIntro;
+  /** Currency sign placed before every price. */
+  currency: string;
+  /** Billing period placed after every price. */
+  period: string;
+  plans: Plan[];
+}
