@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react";
+
 export interface NavItem {
   label: string;
   /** In-page anchor, e.g. "#features". */
@@ -47,4 +49,21 @@ export interface HeroContent {
   primaryCta: CallToAction;
   secondaryCta: CallToAction;
   mockup: PhoneMockupContent;
+}
+
+export interface SectionIntro {
+  title: string;
+  subtitle?: string;
+}
+
+export interface Feature {
+  /** Any icon exported by lucide-react (https://lucide.dev/icons). */
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
+
+export interface FeaturesContent {
+  intro: SectionIntro;
+  items: Feature[];
 }
