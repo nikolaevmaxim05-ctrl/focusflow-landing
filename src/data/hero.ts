@@ -1,13 +1,6 @@
 import { site } from "./site";
 import type { HeroContent } from "./types";
 
-// TEMPORARY: videos and sounds are hot-linked stock candidates until the
-// final files are chosen and saved under /public.
-const pexelsVideo = (file: string) =>
-  `https://videos.pexels.com/video-files/${file}`;
-const mixkitSound = (id: number) =>
-  `https://assets.mixkit.co/active_storage/sfx/${id}/${id}-preview.mp3`;
-
 export const hero: HeroContent = {
   title: "Deep focus, one session at a time",
   description:
@@ -20,7 +13,7 @@ export const hero: HeroContent = {
     label: "See how it works",
     href: "#how-it-works",
   },
-  backgroundVideo: pexelsVideo("6543215/6543215-sd_960_464_30fps.mp4"),
+  backgroundVideo: "/hero/default.mp4",
   mockup: {
     label: "FocusFlow demo: focus timer and focus sounds",
     sessionLabel: "Focus session",
@@ -31,18 +24,18 @@ export const hero: HeroContent = {
     sounds: [
       {
         name: "Rain",
-        audio: mixkitSound(2394),
-        video: pexelsVideo("4786522/4786522-sd_640_360_30fps.mp4"),
+        audio: "/hero/rain.mp3",
+        video: "/hero/rain.mp4",
       },
       {
         name: "Forest",
-        audio: mixkitSound(1210),
-        video: pexelsVideo("5744473/5744473-sd_640_360_24fps.mp4"),
+        audio: "/hero/forest.mp3",
+        video: "/hero/forest.mp4",
       },
       {
         name: "Cafe",
-        audio: mixkitSound(444),
-        video: pexelsVideo("6828710/6828710-sd_640_360_25fps.mp4"),
+        audio: "/hero/cafe.mp3",
+        video: "/hero/cafe.mp4",
       },
     ],
   },

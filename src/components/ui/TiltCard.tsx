@@ -16,7 +16,7 @@ const HOVER_SCALE = 1.04;
 
 /**
  * Card that reacts to the mouse: it grows a little, gets a white outline and
- * glow, and tilts so the side under the cursor rises toward the viewer. Touch
+ * glow, and tilts so the side under the cursor sinks away from the viewer. Touch
  * input and visitors who ask their system for reduced motion get a plain card.
  */
 export function TiltCard({ children, className = "" }: TiltCardProps) {
@@ -32,7 +32,7 @@ export function TiltCard({ children, className = "" }: TiltCardProps) {
     const x = ((event.clientX - box.left) / box.width) * 2 - 1;
     const y = ((event.clientY - box.top) / box.height) * 2 - 1;
 
-    card.style.transform = `perspective(900px) rotateX(${(y * MAX_TILT).toFixed(2)}deg) rotateY(${(-x * MAX_TILT).toFixed(2)}deg) scale(${HOVER_SCALE})`;
+    card.style.transform = `perspective(900px) rotateX(${(-y * MAX_TILT).toFixed(2)}deg) rotateY(${(x * MAX_TILT).toFixed(2)}deg) scale(${HOVER_SCALE})`;
   };
 
   const handleLeave = () => {
