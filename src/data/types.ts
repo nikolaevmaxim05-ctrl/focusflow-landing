@@ -28,3 +28,23 @@ export interface SiteConfig {
   cta: CallToAction;
   nav: NavItem[];
 }
+
+export interface PhoneMockupContent {
+  /** Text alternative read by screen readers instead of the drawing. */
+  alt: string;
+  sessionLabel: string;
+  time: string;
+  sessionProgress: string;
+  /** Share of the timer ring that is filled, from 0 to 1. */
+  ringProgress: number;
+  soundsLabel: string;
+  sounds: { name: string; active: boolean }[];
+}
+
+export interface HeroContent {
+  title: string;
+  description: string;
+  primaryCta: CallToAction;
+  secondaryCta: CallToAction;
+  mockup: PhoneMockupContent;
+}
