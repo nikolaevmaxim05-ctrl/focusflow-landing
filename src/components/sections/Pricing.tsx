@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Section } from "@/components/ui/Section";
+import { ScrambleSpeedPicker } from "@/components/ui/ScrambleSpeedPicker";
 import { ScrambleText } from "@/components/ui/ScrambleText";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { pricing } from "@/data/pricing";
@@ -8,7 +9,8 @@ import { pricing } from "@/data/pricing";
 export function Pricing() {
   return (
     <Section id="pricing">
-      <SectionHeading intro={pricing.intro} scramble />
+      <SectionHeading intro={pricing.intro} />
+      <ScrambleSpeedPicker />
       <ul className="mx-auto mt-14 grid max-w-md gap-6 lg:max-w-none lg:grid-cols-3">
         {pricing.plans.map((plan) => {
           const isHighlighted = Boolean(plan.badge);
