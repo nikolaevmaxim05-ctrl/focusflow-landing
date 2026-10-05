@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. Every colour, font and layout size used on the site is
+ * defined here and exposed as a Tailwind utility (bg-surface, text-muted,
+ * max-w-content, ...). Change a value here to restyle the whole site.
+ */
+@theme inline {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme {
+  /* Surfaces */
+  --color-background: #0c0c0e;
+  --color-surface: #151518;
+  --color-surface-raised: #1d1d21;
+  --color-border: #2a2a30;
+
+  /* Text */
+  --color-foreground: #f5f5f4;
+  --color-muted: #a8a29e;
+  --color-subtle: #8c857f;
+
+  /* Accent */
+  --color-accent: #f97316;
+  --color-accent-hover: #fb923c;
+  --color-accent-foreground: #1c0a00;
+
+  /* Layout */
+  --container-content: 72rem;
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+}
+
+html {
+  /* Keeps anchor targets clear of the sticky header. */
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
