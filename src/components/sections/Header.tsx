@@ -2,6 +2,7 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { Logo } from "@/components/ui/Logo";
 import { MobileMenu } from "@/components/ui/MobileMenu";
+import { NavLinks } from "@/components/ui/NavLinks";
 import { site } from "@/data/site";
 
 export function Header() {
@@ -11,18 +12,7 @@ export function Header() {
         <Logo />
 
         <nav aria-label="Main" className="hidden md:block">
-          <ul className="flex items-center gap-8">
-            {site.nav.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  className="rounded-control text-sm font-medium text-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <NavLinks items={site.nav} />
         </nav>
 
         <div className="hidden md:block">

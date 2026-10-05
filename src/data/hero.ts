@@ -1,6 +1,13 @@
 import { site } from "./site";
 import type { HeroContent } from "./types";
 
+// TEMPORARY: videos and sounds are hot-linked stock candidates until the
+// final files are chosen and saved under /public.
+const pexelsVideo = (file: string) =>
+  `https://videos.pexels.com/video-files/${file}`;
+const mixkitSound = (id: number) =>
+  `https://assets.mixkit.co/active_storage/sfx/${id}/${id}-preview.mp3`;
+
 export const hero: HeroContent = {
   title: "Deep focus, one session at a time",
   description:
@@ -13,17 +20,30 @@ export const hero: HeroContent = {
     label: "See how it works",
     href: "#how-it-works",
   },
+  backgroundVideo: pexelsVideo("6543215/6543215-sd_960_464_30fps.mp4"),
   mockup: {
-    alt: "FocusFlow app screen showing a 25-minute focus timer and a choice of focus sounds",
+    label: "FocusFlow demo: focus timer and focus sounds",
     sessionLabel: "Focus session",
-    time: "25:00",
-    sessionProgress: "Session 2 of 4",
-    ringProgress: 0.7,
+    sessionMinutes: 25,
+    firstSession: 2,
+    sessionsTotal: 4,
     soundsLabel: "Focus sounds",
     sounds: [
-      { name: "Rain", active: true },
-      { name: "Forest", active: false },
-      { name: "Cafe", active: false },
+      {
+        name: "Rain",
+        audio: mixkitSound(2394),
+        video: pexelsVideo("4786522/4786522-sd_640_360_30fps.mp4"),
+      },
+      {
+        name: "Forest",
+        audio: mixkitSound(1210),
+        video: pexelsVideo("5744473/5744473-sd_640_360_24fps.mp4"),
+      },
+      {
+        name: "Cafe",
+        audio: mixkitSound(444),
+        video: pexelsVideo("6828710/6828710-sd_640_360_25fps.mp4"),
+      },
     ],
   },
 };

@@ -67,7 +67,7 @@ export function MobileMenu({ nav, cta }: MobileMenuProps) {
                   <a
                     href={item.href}
                     onClick={close}
-                    className="block rounded-control py-3 text-base font-medium text-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-accent-hover"
+                    className="block rounded-control py-3 text-base font-medium text-muted transition-all duration-300 hover:text-accent hover:[text-shadow:0_0_14px_rgb(45_212_191/0.7)] focus-visible:outline-2 focus-visible:outline-accent-hover"
                   >
                     {item.label}
                   </a>

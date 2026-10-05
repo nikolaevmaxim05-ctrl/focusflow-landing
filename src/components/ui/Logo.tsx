@@ -6,17 +6,19 @@ export function Logo() {
   return (
     <a
       href="#top"
-      className="inline-flex items-center gap-2.5 rounded-control focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover"
+      className="group inline-flex items-center gap-2.5 rounded-control focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover"
     >
       <Image
         src={site.logo.src}
         alt={site.logo.alt}
         width={site.logo.width}
         height={site.logo.height}
-        className="size-9 rounded-lg bg-white"
+        className="size-9 rounded-lg bg-white transition-all duration-300 group-hover:shadow-[0_0_18px_rgb(45_212_191/0.7)]"
         priority
       />
-      <span className="text-lg font-bold tracking-tight">{site.name}</span>
+      <span className="text-lg font-bold tracking-tight transition-all duration-300 group-hover:[text-shadow:0_0_16px_rgb(45_212_191/0.7)]">
+        {site.name}
+      </span>
     </a>
   );
 }

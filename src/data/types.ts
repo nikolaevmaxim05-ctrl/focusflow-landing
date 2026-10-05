@@ -31,16 +31,25 @@ export interface SiteConfig {
   nav: NavItem[];
 }
 
+export interface FocusSound {
+  name: string;
+  /** Looping audio file from /public, played while the sound is selected. */
+  audio: string;
+  /** Background video from /public, shown while the sound is selected. */
+  video: string;
+}
+
 export interface PhoneMockupContent {
-  /** Text alternative read by screen readers instead of the drawing. */
-  alt: string;
+  /** Accessible name of the interactive demo. */
+  label: string;
   sessionLabel: string;
-  time: string;
-  sessionProgress: string;
-  /** Share of the timer ring that is filled, from 0 to 1. */
-  ringProgress: number;
+  /** Length of one focus session on the demo timer. */
+  sessionMinutes: number;
+  /** Session number shown when the page loads. */
+  firstSession: number;
+  sessionsTotal: number;
   soundsLabel: string;
-  sounds: { name: string; active: boolean }[];
+  sounds: FocusSound[];
 }
 
 export interface HeroContent {
@@ -48,6 +57,8 @@ export interface HeroContent {
   description: string;
   primaryCta: CallToAction;
   secondaryCta: CallToAction;
+  /** Background video from /public, shown while no focus sound is selected. */
+  backgroundVideo: string;
   mockup: PhoneMockupContent;
 }
 
