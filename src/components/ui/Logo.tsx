@@ -1,8 +1,12 @@
 import Image from "next/image";
-import { site } from "@/data/site";
+import type { SiteConfig } from "@/data/types";
+
+interface LogoProps {
+  site: SiteConfig;
+}
 
 /** Logo mark on a white tile followed by the site name. Links to the top of the page. */
-export function Logo() {
+export function Logo({ site }: LogoProps) {
   return (
     <a
       href="#top"

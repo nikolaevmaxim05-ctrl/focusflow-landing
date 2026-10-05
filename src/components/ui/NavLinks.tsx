@@ -58,7 +58,7 @@ export function NavLinks({ items }: NavLinksProps) {
   const currentHref = isAtPageEnd ? items[items.length - 1]?.href : activeHref;
 
   return (
-    <ul className="flex items-center gap-3 lg:gap-8">
+    <ul className="flex items-center gap-6 xl:gap-8">
       {items.map((item) => {
         const isActive = item.href === currentHref;
 

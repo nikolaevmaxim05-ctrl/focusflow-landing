@@ -9,6 +9,8 @@ interface ScrambleTextProps {
 const DIGITS = "0123456789";
 const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
 const UPPERCASE = LOWERCASE.toUpperCase();
+const CYRILLIC_LOWERCASE = "абвгдежзийклмнопрстуфхцчшщьюяіїєґыэъё";
+const CYRILLIC_UPPERCASE = CYRILLIC_LOWERCASE.toUpperCase();
 
 /** Time for the whole text to settle, in ms. */
 const DURATION_MS = 600;
@@ -25,6 +27,8 @@ function standIn(character: string) {
   if (DIGITS.includes(character)) return pick(DIGITS);
   if (LOWERCASE.includes(character)) return pick(LOWERCASE);
   if (UPPERCASE.includes(character)) return pick(UPPERCASE);
+  if (CYRILLIC_LOWERCASE.includes(character)) return pick(CYRILLIC_LOWERCASE);
+  if (CYRILLIC_UPPERCASE.includes(character)) return pick(CYRILLIC_UPPERCASE);
   return character;
 }
 

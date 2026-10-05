@@ -2,18 +2,23 @@ import { Container } from "@/components/ui/Container";
 import { CopyEmail } from "@/components/ui/CopyEmail";
 import { Logo } from "@/components/ui/Logo";
 import { SocialIcon } from "@/components/ui/SocialIcon";
-import { footer } from "@/data/footer";
+import type { FooterContent, SiteConfig } from "@/data/types";
+
+interface FooterProps {
+  footer: FooterContent;
+  site: SiteConfig;
+}
 
 const linkClassName =
   "rounded-control text-muted transition-all duration-300 hover:text-accent hover:[text-shadow:0_0_14px_rgb(45_212_191/0.7)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover";
 
-export function Footer() {
+export function Footer({ footer, site }: FooterProps) {
   return (
     <footer className="border-t border-border py-14">
       <Container className="flex flex-col gap-12">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
           <div className="flex flex-col items-start gap-6">
-            <Logo />
+            <Logo site={site} />
             <ul className="flex gap-3">
               {footer.socials.map((social) => (
                 <li key={social.network}>

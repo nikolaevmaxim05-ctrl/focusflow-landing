@@ -1,11 +1,15 @@
 import { Check } from "lucide-react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { Section } from "@/components/ui/Section";
 import { ScrambleText } from "@/components/ui/ScrambleText";
+import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { pricing } from "@/data/pricing";
+import type { PricingContent } from "@/data/types";
 
-export function Pricing() {
+interface PricingProps {
+  pricing: PricingContent;
+}
+
+export function Pricing({ pricing }: PricingProps) {
   return (
     <Section id="pricing">
       <SectionHeading intro={pricing.intro} />

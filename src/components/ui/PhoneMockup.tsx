@@ -1,7 +1,8 @@
-import type { PhoneMockupContent } from "@/data/types";
+import type { PhoneMockupContent, UiStrings } from "@/data/types";
 
 interface PhoneMockupProps {
   content: PhoneMockupContent;
+  ui: UiStrings;
   remainingSeconds: number;
   session: number;
   isRunning: boolean;
@@ -23,6 +24,7 @@ function formatTime(totalSeconds: number) {
 /** App screen drawn in code: a working focus timer and focus sound buttons. */
 export function PhoneMockup({
   content,
+  ui,
   remainingSeconds,
   session,
   isRunning,
@@ -31,6 +33,9 @@ export function PhoneMockup({
   onSelectSound,
 }: PhoneMockupProps) {
   const remainingShare = remainingSeconds / (content.sessionMinutes * 60);
+  const sessionCaption = ui.sessionOf
+    .replace("{current}", String(session))
+    .replace("{total}", String(content.sessionsTotal));
 
   return (
     <div
@@ -48,7 +53,12 @@ export function PhoneMockup({
           {content.sessionLabel}
         </p>
 
-        <div className="relative flex aspect-square w-full max-w-52 items-center justify-center">
+        {/* The ring and the time dim while the timer is paused. */}
+        <div
+          className={`relative flex aspect-square w-full max-w-52 items-center justify-center transition-opacity duration-300 ${
+            isRunning ? "opacity-100" : "opacity-40"
+          }`}
+        >
           <svg
             aria-hidden="true"
             viewBox="0 0 200 200"
@@ -81,17 +91,15 @@ export function PhoneMockup({
             >
               {formatTime(remainingSeconds)}
             </span>
-            <span className="text-xs text-subtle">
-              Session {session} of {content.sessionsTotal}
-            </span>
+            <span className="text-xs text-subtle">{sessionCaption}</span>
           </div>
         </div>
 
         <button
           type="button"
-          aria-label={isRunning ? "Pause timer" : "Resume timer"}
+          aria-label={isRunning ? ui.pauseTimer : ui.resumeTimer}
           onClick={onToggleTimer}
-          className="flex size-14 cursor-pointer items-center justify-center rounded-full bg-accent text-accent-foreground hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover"
+          className="flex size-14 cursor-pointer items-center justify-center rounded-full bg-accent text-accent-foreground transition-all duration-300 hover:bg-accent-hover hover:shadow-[0_0_28px_-4px_rgb(45_212_191/0.8)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover"
         >
           <svg
             aria-hidden="true"
@@ -124,10 +132,10 @@ export function PhoneMockup({
                     type="button"
                     aria-pressed={isActive}
                     onClick={() => onSelectSound(sound.name)}
-                    className={`w-full cursor-pointer rounded-control border py-2 text-center text-xs font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover ${
+                    className={`w-full cursor-pointer rounded-control border py-2 text-center text-xs font-semibold transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover ${
                       isActive
                         ? "border-accent bg-accent/10 text-accent"
-                        : "border-border text-muted hover:border-muted hover:text-foreground"
+                        : "border-border text-muted hover:border-accent hover:text-accent"
                     }`}
                   >
                     {sound.name}

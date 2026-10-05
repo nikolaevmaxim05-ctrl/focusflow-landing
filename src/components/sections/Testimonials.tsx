@@ -2,8 +2,11 @@ import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { TiltCard } from "@/components/ui/TiltCard";
-import { testimonials } from "@/data/testimonials";
-import type { Testimonial } from "@/data/types";
+import type { Testimonial, TestimonialsContent } from "@/data/types";
+
+interface TestimonialsProps {
+  testimonials: TestimonialsContent;
+}
 
 function initials(name: string) {
   return name
@@ -35,7 +38,7 @@ function Avatar({ person }: { person: Testimonial }) {
   );
 }
 
-export function Testimonials() {
+export function Testimonials({ testimonials }: TestimonialsProps) {
   return (
     <Section id="testimonials" className="border-t border-border bg-surface">
       <SectionHeading intro={testimonials.intro} />

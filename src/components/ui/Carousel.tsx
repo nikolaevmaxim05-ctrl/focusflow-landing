@@ -11,12 +11,14 @@ interface CarouselProps {
   intervalSeconds: number;
   /** One background per slide, in the same order as the slides. */
   backgrounds: ReactNode[];
+  /** Accessible names of the arrows and the slide position template. */
+  labels: { previous: string; next: string; slideOf: string };
   /** One child per slide. */
   children: ReactNode;
 }
 
 const arrowClassName =
-  "inline-flex size-11 items-center justify-center rounded-full border border-border text-foreground hover:border-muted hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover";
+  "inline-flex size-11 cursor-pointer items-center justify-center rounded-full border border-border text-foreground transition-all duration-300 hover:border-accent hover:text-accent hover:shadow-[0_0_18px_-2px_rgb(45_212_191/0.7)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover";
 
 /** How long the track must stay still before a copy is swapped for its original. */
 const SETTLE_DELAY_MS = 120;
@@ -62,6 +64,7 @@ export function Carousel({
   label,
   intervalSeconds,
   backgrounds,
+  labels,
   children,
 }: CarouselProps) {
   const trackRef = useRef<HTMLUListElement>(null);
@@ -142,7 +145,9 @@ export function Carousel({
             <li
               key={index}
               aria-roledescription="slide"
-              aria-label={`${index + 1} of ${count}`}
+              aria-label={labels.slideOf
+                .replace("{current}", String(index + 1))
+                .replace("{total}", String(count))}
               className="w-full shrink-0 snap-center"
             >
               {slide}
@@ -157,7 +162,7 @@ export function Carousel({
       <div className="mt-6 flex justify-center gap-3">
         <button
           type="button"
-          aria-label="Previous slide"
+          aria-label={labels.previous}
           onClick={() => handleArrow(-1)}
           className={arrowClassName}
         >
@@ -165,7 +170,7 @@ export function Carousel({
         </button>
         <button
           type="button"
-          aria-label="Next slide"
+          aria-label={labels.next}
           onClick={() => handleArrow(1)}
           className={arrowClassName}
         >

@@ -1,19 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CallToAction, NavItem } from "@/data/types";
+import type { ReactNode } from "react";
+import type { CallToAction, NavItem, UiStrings } from "@/data/types";
 import { ButtonLink } from "./ButtonLink";
 import { Container } from "./Container";
 
 interface MobileMenuProps {
   nav: NavItem[];
   cta: CallToAction;
+  ui: UiStrings;
+  /** Language switcher shown at the top of the panel. */
+  children: ReactNode;
 }
 
 const MENU_ID = "mobile-menu";
 
-/** Burger button and the dropdown panel it toggles. Shown below the md breakpoint. */
-export function MobileMenu({ nav, cta }: MobileMenuProps) {
+/** Burger button and the dropdown panel it toggles. Shown below the lg breakpoint. */
+export function MobileMenu({ nav, cta, ui, children }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -29,14 +33,14 @@ export function MobileMenu({ nav, cta }: MobileMenuProps) {
   const close = () => setIsOpen(false);
 
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         type="button"
         aria-expanded={isOpen}
         aria-controls={MENU_ID}
-        aria-label={isOpen ? "Close menu" : "Open menu"}
+        aria-label={isOpen ? ui.closeMenu : ui.openMenu}
         onClick={() => setIsOpen((open) => !open)}
-        className="-mr-2 inline-flex size-10 items-center justify-center rounded-control text-foreground hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent-hover"
+        className="-mr-2 inline-flex size-10 cursor-pointer items-center justify-center rounded-control text-foreground transition-all duration-300 hover:text-accent focus-visible:outline-2 focus-visible:outline-accent-hover"
       >
         <svg
           aria-hidden="true"
@@ -61,6 +65,7 @@ export function MobileMenu({ nav, cta }: MobileMenuProps) {
           className="absolute inset-x-0 top-full border-b border-border bg-background"
         >
           <Container className="flex flex-col gap-4 py-4">
+            {children}
             <ul className="flex flex-col">
               {nav.map((item) => (
                 <li key={item.href}>

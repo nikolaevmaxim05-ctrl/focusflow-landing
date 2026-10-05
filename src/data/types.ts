@@ -31,6 +31,22 @@ export interface SiteConfig {
   nav: NavItem[];
 }
 
+/** Short interface texts that are not part of any section. */
+export interface UiStrings {
+  mainNavigation: string;
+  language: string;
+  openMenu: string;
+  closeMenu: string;
+  previousSlide: string;
+  nextSlide: string;
+  /** Slide position; {current} and {total} are replaced with numbers. */
+  slideOf: string;
+  /** Demo timer caption; {current} and {total} are replaced with numbers. */
+  sessionOf: string;
+  pauseTimer: string;
+  resumeTimer: string;
+}
+
 export interface FocusSound {
   name: string;
   /** Looping audio file from /public, played while the sound is selected. */
@@ -152,4 +168,16 @@ export interface FooterContent {
   socials: SocialLink[];
   /** Shown after the copyright sign and the current year. */
   copyright: string;
+}
+
+/** Everything shown on the page in one language. */
+export interface SiteContent {
+  site: SiteConfig;
+  ui: UiStrings;
+  hero: HeroContent;
+  features: FeaturesContent;
+  howItWorks: HowItWorksContent;
+  pricing: PricingContent;
+  testimonials: TestimonialsContent;
+  footer: FooterContent;
 }

@@ -5,10 +5,12 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { GooglePlayButton } from "@/components/ui/GooglePlayButton";
 import { PhoneMockup } from "@/components/ui/PhoneMockup";
-import { hero } from "@/data/hero";
+import type { HeroContent, UiStrings } from "@/data/types";
 
-const { mockup } = hero;
-const SESSION_SECONDS = mockup.sessionMinutes * 60;
+interface HeroProps {
+  hero: HeroContent;
+  ui: UiStrings;
+}
 
 /** Volume of the focus sounds, from 0 to 1. */
 const SOUND_VOLUME = 0.6;
@@ -25,8 +27,11 @@ const videoClassName =
  * the one that matches it. Sounds start only on click because browsers block
  * autoplay with audio.
  */
-export function Hero() {
-  const [remainingSeconds, setRemainingSeconds] = useState(SESSION_SECONDS);
+export function Hero({ hero, ui }: HeroProps) {
+  const { mockup } = hero;
+  const sessionSeconds = mockup.sessionMinutes * 60;
+
+  const [remainingSeconds, setRemainingSeconds] = useState(sessionSeconds);
   const [session, setSession] = useState(mockup.firstSession);
   const [isRunning, setIsRunning] = useState(true);
   const [activeSound, setActiveSound] = useState<string | null>(null);
@@ -43,11 +48,11 @@ export function Hero() {
       setRemainingSeconds((seconds) => {
         if (seconds > 1) return seconds - 1;
         setSession((current) => (current % mockup.sessionsTotal) + 1);
-        return SESSION_SECONDS;
+        return sessionSeconds;
       });
     }, 1000);
     return () => window.clearInterval(timer);
-  }, [isRunning]);
+  }, [isRunning, sessionSeconds, mockup.sessionsTotal]);
 
   // Visitors who ask their system for reduced motion get a still frame.
   useEffect(() => {
@@ -163,6 +168,7 @@ export function Hero() {
         <div className="flex justify-center lg:justify-end">
           <PhoneMockup
             content={mockup}
+            ui={ui}
             remainingSeconds={remainingSeconds}
             session={session}
             isRunning={isRunning}

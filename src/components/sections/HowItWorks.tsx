@@ -1,7 +1,11 @@
 import Image from "next/image";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { howItWorks } from "@/data/howItWorks";
+import type { HowItWorksContent } from "@/data/types";
+
+interface HowItWorksProps {
+  howItWorks: HowItWorksContent;
+}
 
 /** Staircase from md up: first step on the left, second centered, third on the right. */
 const stepPosition = [
@@ -15,7 +19,7 @@ const stepPosition = [
  * The data-scroll attributes are read by Locomotive Scroll (see SmoothScroll);
  * the fade itself is the .reveal rule in globals.css.
  */
-export function HowItWorks() {
+export function HowItWorks({ howItWorks }: HowItWorksProps) {
   return (
     <Section
       id="how-it-works"
