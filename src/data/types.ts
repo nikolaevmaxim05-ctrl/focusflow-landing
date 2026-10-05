@@ -82,6 +82,10 @@ export interface FeaturesContent {
 export interface Step {
   title: string;
   description: string;
+  /** Any icon exported by lucide-react (https://lucide.dev/icons). */
+  icon: LucideIcon;
+  illustration: IllustrationName;
+  image: ImageAsset;
 }
 
 export interface HowItWorksContent {

@@ -41,3 +41,33 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
 }
+
+/* Fades all four edges of an element into whatever is behind it. */
+.soft-edges {
+  mask-image:
+    linear-gradient(to right, transparent, black 22%, black 78%, transparent),
+    linear-gradient(to bottom, transparent, black 22%, black 78%, transparent);
+  mask-composite: intersect;
+}
+
+/* Scroll reveal: hidden until the element enters the viewport. */
+.reveal {
+  opacity: 0;
+  transform: translateY(4rem);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s ease;
+}
+
+.reveal.is-inview {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
