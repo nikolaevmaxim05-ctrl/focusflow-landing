@@ -29,8 +29,8 @@ function standIn(character: string) {
 }
 
 /**
- * Text that assembles itself out of random characters, left to right, every
- * time it scrolls into view. Digits shuffle through digits and letters through
+ * Text that assembles itself out of random characters, left to right, the
+ * first time it scrolls into view after the page loads. Digits shuffle through digits and letters through
  * letters; spaces and punctuation stay put. The real text stays in the page
  * for screen readers and keeps the layout steady while the characters change
  * on top of it. Visitors who ask their system for reduced motion see plain
@@ -79,7 +79,9 @@ export function ScrambleText({ text }: ScrambleTextProps) {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) play();
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        play();
       },
       { threshold: 0.6 },
     );

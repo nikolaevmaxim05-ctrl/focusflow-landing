@@ -24,7 +24,8 @@ export const footer: FooterContent = {
   contact: {
     title: "Contact",
     text: "Questions or feedback? Write to us.",
-    email: "mmkcode.business@gmail.com",
+    // Placeholder: replace with the real support address.
+    email: "hello@example.com",
   },
   socials: [
     // Placeholders: replace "#" with the real profile links.
