@@ -146,6 +146,8 @@ export interface FooterContent {
     title: string;
     text: string;
     email: string;
+    /** Shown for a moment after the address is copied. */
+    copiedMessage: string;
   };
   socials: SocialLink[];
   /** Shown after the copyright sign and the current year. */

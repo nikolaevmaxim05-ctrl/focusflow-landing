@@ -9,6 +9,7 @@ export const footer: FooterContent = {
         { label: "Features", href: "#features" },
         { label: "How it works", href: "#how-it-works" },
         { label: "Pricing", href: "#pricing" },
+        { label: "Testimonials", href: "#testimonials" },
         { label: "Get it on Google Play", href: site.cta.href, external: true },
       ],
     },
@@ -26,6 +27,7 @@ export const footer: FooterContent = {
     text: "Questions or feedback? Write to us.",
     // Placeholder: replace with the real support address.
     email: "hello@example.com",
+    copiedMessage: "Email address copied",
   },
   socials: [
     // Placeholders: replace "#" with the real profile links.

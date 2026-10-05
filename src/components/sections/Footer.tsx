@@ -1,10 +1,11 @@
 import { Container } from "@/components/ui/Container";
+import { CopyEmail } from "@/components/ui/CopyEmail";
 import { Logo } from "@/components/ui/Logo";
 import { SocialIcon } from "@/components/ui/SocialIcon";
 import { footer } from "@/data/footer";
 
 const linkClassName =
-  "rounded-control text-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover";
+  "rounded-control text-muted transition-all duration-300 hover:text-accent hover:[text-shadow:0_0_14px_rgb(45_212_191/0.7)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover";
 
 export function Footer() {
   return (
@@ -19,7 +20,7 @@ export function Footer() {
                   <a
                     href={social.href}
                     aria-label={social.label}
-                    className="flex size-10 items-center justify-center rounded-full border border-border text-muted hover:border-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover"
+                    className="flex size-10 items-center justify-center rounded-full border border-border text-muted transition-all duration-300 hover:border-accent hover:text-accent hover:shadow-[0_0_18px_-2px_rgb(45_212_191/0.7)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover"
                   >
                     <SocialIcon network={social.network} className="size-4" />
                   </a>
@@ -52,12 +53,10 @@ export function Footer() {
           <div id="contact">
             <h2 className="text-sm font-semibold">{footer.contact.title}</h2>
             <p className="mt-4 text-muted">{footer.contact.text}</p>
-            <a
-              href={`mailto:${footer.contact.email}`}
-              className="mt-3 inline-block rounded-control text-sm font-semibold [overflow-wrap:anywhere] text-accent hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover"
-            >
-              {footer.contact.email}
-            </a>
+            <CopyEmail
+              email={footer.contact.email}
+              copiedMessage={footer.contact.copiedMessage}
+            />
           </div>
         </div>
 

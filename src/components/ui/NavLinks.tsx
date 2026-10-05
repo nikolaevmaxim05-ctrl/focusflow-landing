@@ -19,6 +19,7 @@ const hoverClassName =
  */
 export function NavLinks({ items }: NavLinksProps) {
   const [activeHref, setActiveHref] = useState<string | null>(null);
+  const [isAtPageEnd, setIsAtPageEnd] = useState(false);
 
   useEffect(() => {
     const sections = items
@@ -38,20 +39,35 @@ export function NavLinks({ items }: NavLinksProps) {
     );
     sections.forEach((section) => observer.observe(section));
 
-    return () => observer.disconnect();
+    // The last section is too short to reach that band, so the end of the page counts for it.
+    const checkPageEnd = () => {
+      const page = document.documentElement;
+      setIsAtPageEnd(
+        window.innerHeight + window.scrollY >= page.scrollHeight - 4,
+      );
+    };
+    window.addEventListener("scroll", checkPageEnd, { passive: true });
+    checkPageEnd();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", checkPageEnd);
+    };
   }, [items]);
 
+  const currentHref = isAtPageEnd ? items[items.length - 1]?.href : activeHref;
+
   return (
-    <ul className="flex items-center gap-8">
+    <ul className="flex items-center gap-3 lg:gap-8">
       {items.map((item) => {
-        const isActive = item.href === activeHref;
+        const isActive = item.href === currentHref;
 
         return (
           <li key={item.href}>
             <a
               href={item.href}
               aria-current={isActive ? "true" : undefined}
-              className={`rounded-control text-sm font-medium transition-all duration-300 ${hoverClassName} focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover ${
+              className={`rounded-control text-sm font-medium whitespace-nowrap transition-all duration-300 ${hoverClassName} focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-hover ${
                 isActive ? activeClassName : "text-muted"
               }`}
             >

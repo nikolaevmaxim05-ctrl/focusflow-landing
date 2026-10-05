@@ -13,22 +13,25 @@ const SESSION_SECONDS = mockup.sessionMinutes * 60;
 /** Volume of the focus sounds, from 0 to 1. */
 const SOUND_VOLUME = 0.6;
 
+/** Length of the cross-fade between background videos, in ms. Matches duration-1000. */
+const FADE_MS = 1000;
+
 const videoClassName =
   "absolute inset-0 size-full object-cover transition-opacity duration-1000";
 
 /**
  * Hero with a live demo: the phone timer counts down from page load and the
- * focus sound buttons play a looping sound and switch the background video
- * to match it. Sounds start only on click because browsers block autoplay
- * with audio.
+ * focus sound buttons play a looping sound and fade the background video to
+ * the one that matches it. Sounds start only on click because browsers block
+ * autoplay with audio.
  */
 export function Hero() {
   const [remainingSeconds, setRemainingSeconds] = useState(SESSION_SECONDS);
   const [session, setSession] = useState(mockup.firstSession);
   const [isRunning, setIsRunning] = useState(true);
   const [activeSound, setActiveSound] = useState<string | null>(null);
-  /** Sounds picked at least once: their videos stay loaded for quick switching. */
-  const [loadedSounds, setLoadedSounds] = useState<string[]>([]);
+  /** Sounds whose video has loaded enough to be faded in. */
+  const [readyVideos, setReadyVideos] = useState<string[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
@@ -46,13 +49,34 @@ export function Hero() {
     return () => window.clearInterval(timer);
   }, [isRunning]);
 
-  // Visitors who ask their system for reduced motion get still video frames.
+  // Visitors who ask their system for reduced motion get a still frame.
   useEffect(() => {
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    backgroundRef.current
-      ?.querySelectorAll("video")
-      .forEach((video) => video.pause());
-  }, [loadedSounds]);
+    backgroundRef.current?.querySelector("video")?.pause();
+  }, []);
+
+  // Sound videos play only while selected; the others stop once they have faded out.
+  useEffect(() => {
+    const videos =
+      backgroundRef.current?.querySelectorAll<HTMLVideoElement>(
+        "video[data-sound]",
+      ) ?? [];
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    videos.forEach((video) => {
+      if (video.dataset.sound === activeSound && !reduceMotion) {
+        void video.play();
+      }
+    });
+    const timer = window.setTimeout(() => {
+      videos.forEach((video) => {
+        if (video.dataset.sound !== activeSound) video.pause();
+      });
+    }, FADE_MS);
+    return () => window.clearTimeout(timer);
+  }, [activeSound]);
 
   const handleSelectSound = (name: string) => {
     const audio = audioRef.current;
@@ -71,9 +95,6 @@ export function Hero() {
     audio.volume = SOUND_VOLUME;
     void audio.play();
     setActiveSound(name);
-    setLoadedSounds((names) =>
-      names.includes(name) ? names : [...names, name],
-    );
   };
 
   return (
@@ -85,23 +106,30 @@ export function Hero() {
           muted
           loop
           playsInline
-          className={`${videoClassName} ${activeSound ? "opacity-0" : "opacity-100"}`}
+          className="absolute inset-0 size-full object-cover"
         />
-        {mockup.sounds
-          .filter((sound) => loadedSounds.includes(sound.name))
-          .map((sound) => (
-            <video
-              key={sound.name}
-              src={sound.video}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className={`${videoClassName} ${
-                sound.name === activeSound ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          ))}
+        {/* Sound videos sit on top of the default one and fade in once loaded, so there is never a blank frame. */}
+        {mockup.sounds.map((sound) => (
+          <video
+            key={sound.name}
+            data-sound={sound.name}
+            src={sound.video}
+            muted
+            loop
+            playsInline
+            preload="none"
+            onCanPlay={() =>
+              setReadyVideos((names) =>
+                names.includes(sound.name) ? names : [...names, sound.name],
+              )
+            }
+            className={`${videoClassName} ${
+              sound.name === activeSound && readyVideos.includes(sound.name)
+                ? "opacity-100"
+                : "opacity-0"
+            }`}
+          />
+        ))}
         <div className="absolute inset-0 bg-background/70" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-background to-transparent" />
       </div>
