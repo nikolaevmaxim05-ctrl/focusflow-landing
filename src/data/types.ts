@@ -114,3 +114,29 @@ export interface TestimonialsContent {
   intro: SectionIntro;
   items: Testimonial[];
 }
+
+export type SocialNetwork = "x" | "instagram" | "youtube";
+
+export interface SocialLink {
+  network: SocialNetwork;
+  /** Accessible name of the link, e.g. "FocusFlow on Instagram". */
+  label: string;
+  href: string;
+}
+
+export interface FooterColumn {
+  title: string;
+  links: { label: string; href: string; external?: boolean }[];
+}
+
+export interface FooterContent {
+  columns: FooterColumn[];
+  contact: {
+    title: string;
+    text: string;
+    email: string;
+  };
+  socials: SocialLink[];
+  /** Shown after the copyright sign and the current year. */
+  copyright: string;
+}

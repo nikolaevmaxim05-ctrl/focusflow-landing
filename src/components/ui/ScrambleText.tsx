@@ -11,13 +11,10 @@ const LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
 const UPPERCASE = LOWERCASE.toUpperCase();
 
 /** Time for the whole text to settle, in ms. */
-export const DEFAULT_SCRAMBLE_MS = 1100;
+const DURATION_MS = 600;
 
 /** How often the not yet settled characters change, in ms. */
 const SHUFFLE_INTERVAL_MS = 45;
-
-/** TEMPORARY: lets ScrambleSpeedPicker try other durations and replay the effect. */
-export const SCRAMBLE_REPLAY_EVENT = "scramble-replay";
 
 function pick(characters: string) {
   return characters[Math.floor(Math.random() * characters.length)];
@@ -59,13 +56,13 @@ export function ScrambleText({ text }: ScrambleTextProps) {
       label.style.opacity = "";
     };
 
-    const play = (durationMs = DEFAULT_SCRAMBLE_MS) => {
+    const play = () => {
       finish();
       const startedAt = performance.now();
       label.style.opacity = "0";
 
       const shuffle = () => {
-        const progress = (performance.now() - startedAt) / durationMs;
+        const progress = (performance.now() - startedAt) / DURATION_MS;
         if (progress >= 1) {
           finish();
           return;
@@ -80,25 +77,16 @@ export function ScrambleText({ text }: ScrambleTextProps) {
       timer = window.setInterval(shuffle, SHUFFLE_INTERVAL_MS);
     };
 
-    let durationMs = DEFAULT_SCRAMBLE_MS;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) play(durationMs);
+        if (entry.isIntersecting) play();
       },
       { threshold: 0.6 },
     );
     observer.observe(root);
 
-    // TEMPORARY: speed comparison, remove together with ScrambleSpeedPicker.
-    const replay = (event: Event) => {
-      durationMs = (event as CustomEvent<number>).detail;
-      play(durationMs);
-    };
-    window.addEventListener(SCRAMBLE_REPLAY_EVENT, replay);
-
     return () => {
       observer.disconnect();
-      window.removeEventListener(SCRAMBLE_REPLAY_EVENT, replay);
       finish();
     };
   }, [text]);
