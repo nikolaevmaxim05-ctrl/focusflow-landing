@@ -56,14 +56,35 @@ export interface SectionIntro {
   subtitle?: string;
 }
 
+export type IllustrationName =
+  "timer" | "minimal" | "stats" | "sounds" | "streak" | "themes";
+
+/** Slide background: a photo from /public or an illustration drawn in code. */
+export type FeatureBackground =
+  | { type: "photo"; image: ImageAsset }
+  | { type: "illustration"; name: IllustrationName };
+
 export interface Feature {
   /** Any icon exported by lucide-react (https://lucide.dev/icons). */
   icon: LucideIcon;
   title: string;
   description: string;
+  background: FeatureBackground;
 }
 
 export interface FeaturesContent {
   intro: SectionIntro;
+  /** Seconds between automatic slides of the carousel. */
+  autoplaySeconds: number;
   items: Feature[];
+}
+
+export interface Step {
+  title: string;
+  description: string;
+}
+
+export interface HowItWorksContent {
+  intro: SectionIntro;
+  steps: Step[];
 }

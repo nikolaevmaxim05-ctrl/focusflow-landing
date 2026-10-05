@@ -1,25 +1,25 @@
-import { Section } from "@/components/ui/Section";
+import { Carousel } from "@/components/ui/Carousel";
+import { Container } from "@/components/ui/Container";
+import { FeatureSlide } from "@/components/ui/FeatureSlide";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { features } from "@/data/features";
 
 export function Features() {
   return (
-    <Section id="features">
-      <SectionHeading intro={features.intro} />
-      <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {features.items.map((feature) => (
-          <li
-            key={feature.title}
-            className="rounded-card border border-border bg-surface p-6"
-          >
-            <span className="flex size-11 items-center justify-center rounded-control bg-accent/10 text-accent">
-              <feature.icon aria-hidden="true" className="size-6" />
-            </span>
-            <h3 className="mt-5 text-lg font-semibold">{feature.title}</h3>
-            <p className="mt-2 text-muted">{feature.description}</p>
-          </li>
-        ))}
-      </ul>
-    </Section>
+    <section id="features" className="py-16 md:py-24">
+      <Container>
+        <SectionHeading intro={features.intro} />
+      </Container>
+      <div className="mx-auto mt-12 max-w-[100rem]">
+        <Carousel
+          label={features.intro.title}
+          intervalSeconds={features.autoplaySeconds}
+        >
+          {features.items.map((feature) => (
+            <FeatureSlide key={feature.title} feature={feature} />
+          ))}
+        </Carousel>
+      </div>
+    </section>
   );
 }
