@@ -22,11 +22,11 @@ export const features: FeaturesContent = {
       description:
         "Customizable focus sessions with quick switching between work and breaks.",
       image: {
-          src: "/features/timers.webp",
-          alt: "Hourglass on a wooden table",
-          width: 1600,
-          height: 1067,
-        },
+        src: "/features/timers.webp",
+        alt: "Hourglass on a wooden table",
+        width: 1600,
+        height: 1067,
+      },
     },
     {
       icon: Sparkles,
@@ -34,11 +34,11 @@ export const features: FeaturesContent = {
       description:
         "A clean, minimal interface that keeps your attention on the task.",
       image: {
-          src: "/features/design.webp",
-          alt: "Tidy white desk with books and a vase",
-          width: 1600,
-          height: 1067,
-        },
+        src: "/features/design.webp",
+        alt: "Tidy white desk with books and a vase",
+        width: 1600,
+        height: 1067,
+      },
     },
     {
       icon: ChartColumn,
@@ -46,11 +46,11 @@ export const features: FeaturesContent = {
       description:
         "Session history and focus time statistics show where your hours go.",
       image: {
-          src: "/features/stats.webp",
-          alt: "Analytics charts on a laptop screen",
-          width: 1600,
-          height: 1067,
-        },
+        src: "/features/stats.webp",
+        alt: "Analytics charts on a laptop screen",
+        width: 1600,
+        height: 1067,
+      },
     },
     {
       icon: Headphones,
@@ -58,11 +58,11 @@ export const features: FeaturesContent = {
       description:
         "Layer built-in sounds to create the background that helps you concentrate.",
       image: {
-          src: "/features/sounds.webp",
-          alt: "Headphones surrounded by string lights",
-          width: 1600,
-          height: 1067,
-        },
+        src: "/features/sounds.webp",
+        alt: "Headphones surrounded by string lights",
+        width: 1600,
+        height: 1067,
+      },
     },
     {
       icon: Flame,
@@ -80,11 +80,11 @@ export const features: FeaturesContent = {
       title: "Personal themes",
       description: "Adjust settings and the app theme to fit the way you work.",
       image: {
-          src: "/features/themes.webp",
-          alt: "Fan deck of colorful paper swatches",
-          width: 1600,
-          height: 1067,
-        },
+        src: "/features/themes.webp",
+        alt: "Fan deck of colorful paper swatches",
+        width: 1600,
+        height: 1067,
+      },
     },
   ],
 };

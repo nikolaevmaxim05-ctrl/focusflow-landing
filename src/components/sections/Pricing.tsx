@@ -1,13 +1,14 @@
 import { Check } from "lucide-react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Section } from "@/components/ui/Section";
+import { ScrambleText } from "@/components/ui/ScrambleText";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { pricing } from "@/data/pricing";
 
 export function Pricing() {
   return (
     <Section id="pricing">
-      <SectionHeading intro={pricing.intro} />
+      <SectionHeading intro={pricing.intro} scramble />
       <ul className="mx-auto mt-14 grid max-w-md gap-6 lg:max-w-none lg:grid-cols-3">
         {pricing.plans.map((plan) => {
           const isHighlighted = Boolean(plan.badge);
@@ -25,11 +26,12 @@ export function Pricing() {
                 </span>
               )}
 
-              <h3 className="text-lg font-semibold">{plan.name}</h3>
+              <h3 className="text-lg font-semibold">
+                <ScrambleText text={plan.name} />
+              </h3>
               <p className="mt-4 flex items-baseline gap-2">
                 <span className="text-5xl font-extrabold tracking-tight tabular-nums">
-                  {pricing.currency}
-                  {plan.price}
+                  <ScrambleText text={`${pricing.currency}${plan.price}`} />
                 </span>
                 <span className="text-muted">{pricing.period}</span>
               </p>
@@ -41,7 +43,9 @@ export function Pricing() {
                       aria-hidden="true"
                       className="mt-0.5 size-5 shrink-0 text-accent"
                     />
-                    <span className="text-muted">{feature}</span>
+                    <span className="text-muted">
+                      <ScrambleText text={feature} />
+                    </span>
                   </li>
                 ))}
               </ul>

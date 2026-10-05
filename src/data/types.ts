@@ -101,3 +101,16 @@ export interface PricingContent {
   period: string;
   plans: Plan[];
 }
+
+export interface Testimonial {
+  quote: string;
+  name: string;
+  role: string;
+  /** Square portrait from /public. Without it the initials are shown. */
+  photo?: ImageAsset;
+}
+
+export interface TestimonialsContent {
+  intro: SectionIntro;
+  items: Testimonial[];
+}

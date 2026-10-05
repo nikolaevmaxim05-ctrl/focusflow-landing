@@ -6,8 +6,8 @@ import { howItWorks } from "@/data/howItWorks";
 /** Staircase from md up: first step on the left, second centered, third on the right. */
 const stepPosition = [
   "md:mr-auto",
-  "md:mx-auto md:-mt-20",
-  "md:ml-auto md:-mt-20",
+  "md:mx-auto md:mt-24",
+  "md:ml-auto md:mt-24",
 ];
 
 /**
@@ -33,7 +33,7 @@ export function HowItWorks() {
           >
             <div
               data-scroll
-              data-scroll-speed="0.08"
+              data-scroll-speed="0.03"
               className="relative aspect-[4/3] overflow-hidden rounded-card border border-border"
             >
               <Image
