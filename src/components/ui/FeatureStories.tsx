@@ -1,9 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { KeyboardEvent, PointerEvent, ReactNode } from "react";
 import type { Feature } from "@/data/types";
+import { StepNumber } from "./StepNumber";
 
 /** A feature without its icon component, which cannot cross the server/client boundary. */
 export type StoryItem = Omit<Feature, "icon">;
@@ -28,6 +35,13 @@ const TAP_MS = 250;
 const BULLET_DELAY_MS = 200;
 const BULLET_STEP_MS = 110;
 
+/**
+ * Longest stretch of time one animation frame may add to the progress, in ms.
+ * Frames stop while the tab is hidden; without this cap the first frame after
+ * coming back would add the whole absence and skip the step.
+ */
+const MAX_FRAME_MS = 100;
+
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
 function subscribeToMotionPreference(onChange: () => void) {
@@ -44,8 +58,15 @@ function stepNumber(index: number) {
  * Six features shown like a stories player: a column of tabs with progress
  * bars on the left (bars on top below the lg breakpoint) and one open card on
  * the right. The photo of the open step fills the whole section behind them.
- * Steps advance on their own once the block has scrolled into view, pause on
- * hover or hold, and respond to clicks, taps and arrow keys.
+ * Steps advance on their own while the block is on screen (starting the first
+ * time it scrolls into view) and respond to clicks, taps and arrow keys. The
+ * mouse never pauses them; on touch screens a long press does.
+ *
+ * The bars are not rendered from state: one effect owns their widths. Every
+ * time the open step changes it writes all of them (passed steps full, the
+ * open one at its elapsed share, the rest empty) and then moves only the open
+ * bar, frame by frame. A generation counter lets a frame scheduled by an
+ * earlier run of that effect recognise that it is stale and do nothing.
  */
 export function FeatureStories({
   items,
@@ -57,11 +78,18 @@ export function FeatureStories({
   const [isLeaving, setIsLeaving] = useState(false);
   const [isHeld, setIsHeld] = useState(false);
   const [hasEntered, setHasEntered] = useState(false);
+  const [isInView, setIsInView] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const barRefs = useRef<(HTMLElement | null)[]>([]);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const isHovered = useRef(false);
+  /** Time the open step has been running, in ms. Survives re-renders; reset per step. */
+  const elapsed = useRef(0);
+  /** Bumped by every run of the progress effect, so a stale frame can tell it is stale. */
+  const generation = useRef(0);
+  /** Step that opens when the running switch ends; a choice made meanwhile replaces it. */
+  const nextStep = useRef(0);
   const pressStart = useRef(0);
+  /** Timer of the running switch, 0 while none runs. */
   const switchTimer = useRef(0);
   const count = items.length;
   const isStill = useSyncExternalStore(
@@ -71,7 +99,8 @@ export function FeatureStories({
   );
 
   // Icons draw themselves: every path needs a unit length for the dash animation.
-  // The first card starts drawing once the block scrolls into view.
+  // The first card starts drawing once the block scrolls into view, and the
+  // steps only advance while it stays there.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -82,9 +111,8 @@ export function FeatureStories({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
-        setHasEntered(true);
-        observer.disconnect();
+        setIsInView(entry.isIntersecting);
+        if (entry.isIntersecting) setHasEntered(true);
       },
       { threshold: 0.3 },
     );
@@ -92,37 +120,79 @@ export function FeatureStories({
     return () => observer.disconnect();
   }, []);
 
-  /** Opens a step: the current card leaves, then the chosen one appears. */
-  const goTo = (index: number) => {
-    if (index === active || isLeaving) return;
+  /**
+   * Opens a step: the current card leaves, then the chosen one appears. A
+   * choice made while a switch is running is not dropped: it replaces the
+   * target of that switch, so the step chosen last is the one that opens.
+   */
+  const goTo = useCallback(
+    (index: number) => {
+      if (isStill) {
+        // A switch started before motion got reduced must not open its step later.
+        window.clearTimeout(switchTimer.current);
+        switchTimer.current = 0;
+        setIsLeaving(false);
+        setActive(index);
+        return;
+      }
+      nextStep.current = index;
+      if (switchTimer.current || index === active) return;
 
-    if (isStill) {
-      setActive(index);
-      return;
-    }
-    setIsLeaving(true);
-    window.clearTimeout(switchTimer.current);
-    switchTimer.current = window.setTimeout(() => {
-      setActive(index);
-      setIsLeaving(false);
-    }, SWITCH_MS);
+      setIsLeaving(true);
+      switchTimer.current = window.setTimeout(() => {
+        switchTimer.current = 0;
+        setActive(nextStep.current);
+        setIsLeaving(false);
+      }, SWITCH_MS);
+    },
+    [active, isStill],
+  );
+
+  /** Moves by a number of steps from the open one, or from the one about to open. */
+  const goBy = (delta: number) => {
+    const base = switchTimer.current ? nextStep.current : active;
+    goTo((base + delta + count) % count);
   };
 
-  // Progress of the open step: the bar fills over stepSeconds, then the next step opens.
+  // A new step starts its bar from zero. Declared before the progress effect,
+  // so the reset is already done when the bars are painted.
   useEffect(() => {
-    if (isStill || !hasEntered) return;
+    elapsed.current = 0;
+  }, [active]);
+
+  // Progress of the open step. First every bar gets the width that belongs to
+  // the current step. Then, while the block is on screen and nothing pauses
+  // it, the open bar fills over stepSeconds and the next step opens. A hold or
+  // a running switch stops the loop; restarting it (on any of the
+  // dependencies) continues from the stored elapsed time.
+  useEffect(() => {
+    const run = ++generation.current;
+    const bars = barRefs.current;
+    const stepMs = stepSeconds * 1000;
+    const shareNow = () => Math.min(elapsed.current / stepMs, 1);
+
+    const share = shareNow();
+    bars.forEach((bar, index) => {
+      if (!bar) return;
+      bar.style.width =
+        index < active ? "100%" : index === active ? `${share * 100}%` : "0%";
+    });
+
+    if (isStill || !hasEntered || !isInView || isHeld || isLeaving) return;
 
     let frame = 0;
-    let elapsed = 0;
     let last = performance.now();
 
     const tick = (now: number) => {
-      const paused = isHovered.current || isHeld || isLeaving;
-      if (!paused) elapsed += now - last;
+      if (run !== generation.current) return;
+
+      if (!document.hidden) {
+        elapsed.current += Math.min(now - last, MAX_FRAME_MS);
+      }
       last = now;
 
-      const share = Math.min(elapsed / (stepSeconds * 1000), 1);
-      const bar = barRefs.current[active];
+      const share = shareNow();
+      const bar = bars[active];
       if (bar) bar.style.width = `${share * 100}%`;
 
       if (share >= 1) {
@@ -133,7 +203,17 @@ export function FeatureStories({
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  });
+  }, [
+    active,
+    isStill,
+    hasEntered,
+    isInView,
+    isHeld,
+    isLeaving,
+    stepSeconds,
+    count,
+    goTo,
+  ]);
 
   useEffect(() => () => window.clearTimeout(switchTimer.current), []);
 
@@ -171,7 +251,7 @@ export function FeatureStories({
 
     const box = event.currentTarget.getBoundingClientRect();
     const isRightHalf = event.clientX - box.left > box.width / 2;
-    goTo(isRightHalf ? (active + 1) % count : (active - 1 + count) % count);
+    goBy(isRightHalf ? 1 : -1);
   };
 
   return (
@@ -209,8 +289,6 @@ export function FeatureStories({
           className={`stories relative grid gap-3 lg:grid-cols-[420px_minmax(0,1fr)] lg:gap-5 ${
             isStill ? "is-still" : ""
           }`}
-          onMouseEnter={() => (isHovered.current = true)}
-          onMouseLeave={() => (isHovered.current = false)}
         >
           <div
             role="tablist"
@@ -234,12 +312,14 @@ export function FeatureStories({
                   tabIndex={isActive ? 0 : -1}
                   onClick={() => goTo(index)}
                   onKeyDown={(event) => handleTabKey(event, index)}
-                  className={`group grid min-w-0 cursor-pointer gap-y-1.5 text-left transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:grid-cols-[44px_1fr] lg:gap-y-3 lg:rounded-[18px] lg:border lg:px-[22px] lg:py-5 ${
+                  className={`group grid min-w-0 cursor-pointer gap-y-1.5 text-left transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-lg:-mx-[3px] max-lg:-my-2.5 max-lg:px-[3px] max-lg:py-2.5 max-lg:focus-visible:outline-offset-0 lg:grid-cols-[44px_1fr] lg:gap-y-3 lg:rounded-[18px] lg:border lg:px-[22px] lg:py-5 ${
                     isActive
                       ? "lg:border-accent/40 lg:bg-[linear-gradient(90deg,color-mix(in_srgb,var(--color-accent)_7%,transparent),transparent_70%),var(--color-surface)]"
                       : "lg:border-border lg:bg-surface"
                   }`}
                 >
+                  {/* Below lg the padding + matching negative margin enlarge the touch target to
+                      44px+ without moving the bar or the number; neighbours meet at the 6px gap. */}
                   {/* Progress bar: first in the DOM on small screens (stories bars), last on desktop. */}
                   <span
                     aria-hidden="true"
@@ -249,8 +329,7 @@ export function FeatureStories({
                       ref={(node) => {
                         barRefs.current[index] = node;
                       }}
-                      className="block h-full bg-accent"
-                      style={{ width: index < active ? "100%" : "0%" }}
+                      className="block h-full w-0 bg-accent"
                     />
                   </span>
                   <span
@@ -289,22 +368,25 @@ export function FeatureStories({
                     id={`feature-panel-${index}`}
                     role="tabpanel"
                     aria-labelledby={`feature-tab-${index}`}
-                    data-step={stepNumber(index)}
                     className={`stories-card relative col-start-1 row-start-1 min-h-[430px] px-5 pt-6 pb-[26px] lg:px-11 lg:py-10 ${
                       isShown ? "is-show" : ""
                     } ${isActive && isLeaving ? "is-out" : ""}`}
                     style={isActive ? undefined : { visibility: "hidden" }}
                   >
+                    <StepNumber
+                      value={stepNumber(index)}
+                      className="stories-number"
+                    />
                     <span
                       aria-hidden="true"
-                      className="stories-icon mb-5 block size-12 text-accent lg:mb-[26px] lg:size-16"
+                      className="stories-icon mb-5 block size-12 text-accent lg:mb-[26px] lg:size-[72px]"
                     >
                       {icons[index]}
                     </span>
-                    <h3 className="max-w-[80%] text-2xl font-extrabold tracking-tight lg:text-[32px]">
+                    <h3 className="max-w-[80%] text-[32px] leading-[1.33] font-extrabold tracking-tight lg:text-[44px]">
                       {item.title}
                     </h3>
-                    <ul className="mt-5 flex flex-col gap-2.5">
+                    <ul className="mt-7 flex flex-col gap-3.5">
                       {item.bullets.map((bullet, bulletIndex) => (
                         <li
                           key={bullet}
@@ -313,11 +395,11 @@ export function FeatureStories({
                               ? `${BULLET_DELAY_MS + BULLET_STEP_MS * bulletIndex}ms`
                               : "0ms",
                           }}
-                          className="flex items-start gap-3 text-sm leading-[1.55] text-foreground/85"
+                          className="flex items-start gap-3 text-lg leading-[1.45] text-foreground/85 lg:text-xl"
                         >
                           <span
                             aria-hidden="true"
-                            className="mt-[7px] size-[5px] shrink-0 rounded-full bg-accent"
+                            className="mt-[10.5px] size-[5px] shrink-0 rounded-full bg-accent lg:mt-3"
                           />
                           {bullet}
                         </li>

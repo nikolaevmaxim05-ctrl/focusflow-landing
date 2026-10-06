@@ -75,6 +75,22 @@ body {
   transition-timing-function: ease-out;
 }
 
+/* Outline and glow: on mouse hover, and on the card under the middle of a
+   touch screen (CenterSpotlight sets .is-centered). The hovered card also
+   grows and tilts after the cursor in TiltCard.tsx; the centred one only grows. */
+@media (hover: hover) {
+  .tilt-card:hover {
+    border-color: rgb(255 255 255 / 0.8);
+    box-shadow: 0 0 2.5rem rgb(255 255 255 / 0.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt-card {
+    transition: none;
+  }
+}
+
 /* Gloss that slides away from the cursor. Only this wrapper clips, so the
    card's own outline and glow stay intact. */
 .card-gloss-wrap {
@@ -101,6 +117,144 @@ body {
   );
   transition: opacity 0.2s ease-out;
   will-change: opacity, transform;
+}
+
+/*
+ * Pricing cards. One highlight for three triggers: mouse hover, keyboard focus
+ * on the button inside, and .is-centered, which CenterSpotlight sets on the card
+ * nearest the middle of a touch screen. The highlighted plan lifts higher and
+ * glows stronger. Written without nesting: Lightning CSS merges adjacent nested
+ * rules and dropped the :has(:focus-visible) selector.
+ */
+/*
+ * Scroll spotlight (CenterSpotlight.tsx) on phones: the card nearest the
+ * middle of the screen gets the hover look, the others blur and dim a little.
+ * The strength of the effect lives in these variables.
+ */
+.spotlight {
+  --spot-scale: 1.03;
+  --spot-blur: 1px;
+  --spot-dim: 0.85;
+  --spot-glow: 0 0 44px -2px rgb(45 212 191 / 1);
+  --spot-ease: 450ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.plan-card {
+  --plan-lift: -0.375rem;
+  --plan-glow: 0 0 28px -4px rgb(45 212 191 / 0.8);
+  transition:
+    translate 300ms,
+    border-color 300ms,
+    box-shadow 300ms,
+    filter var(--spot-ease),
+    opacity var(--spot-ease);
+}
+
+.plan-card[data-highlighted] {
+  --plan-lift: -0.625rem;
+  --plan-glow: 0 0 44px -2px rgb(45 212 191 / 1);
+}
+
+.plan-price {
+  transition: color 300ms;
+}
+
+.plan-check {
+  transition:
+    color 300ms,
+    scale 300ms;
+}
+
+.plan-card:is(.is-centered, :has(:focus-visible)) {
+  translate: 0 var(--plan-lift);
+  border-color: var(--color-accent);
+  box-shadow: var(--plan-glow);
+}
+
+.plan-card:is(.is-centered, :has(:focus-visible)) .plan-price {
+  color: var(--color-accent);
+}
+
+.plan-card:is(.is-centered, :has(:focus-visible)) .plan-check {
+  color: var(--color-accent-hover);
+  scale: 1.1;
+}
+
+@media (hover: hover) {
+  .plan-card:hover {
+    translate: 0 var(--plan-lift);
+    border-color: var(--color-accent);
+    box-shadow: var(--plan-glow);
+  }
+
+  .plan-card:hover .plan-price {
+    color: var(--color-accent);
+  }
+
+  .plan-card:hover .plan-check {
+    color: var(--color-accent-hover);
+    scale: 1.1;
+  }
+}
+
+/* Hand-over between cards while scrolling is a little slower than hover. */
+.plan-card.is-centered {
+  z-index: 1;
+  transition-duration: 450ms;
+}
+
+.plan-card.is-dimmed {
+  filter: blur(var(--spot-blur));
+  opacity: var(--spot-dim);
+}
+
+/*
+ * Testimonial card: the tilt card gets the same spotlight on phones. "scale"
+ * is a separate property so it never fights the inline transform TiltCard
+ * writes for the mouse tilt. The transition applies only where the spotlight
+ * runs, so the mouse timings of .tilt-card stay untouched on desktop.
+ */
+@media (hover: none) and (max-width: 1023.98px) {
+  .testimonial-card {
+    transition:
+      scale var(--spot-ease),
+      filter var(--spot-ease),
+      opacity var(--spot-ease),
+      border-color var(--spot-ease),
+      box-shadow var(--spot-ease);
+  }
+}
+
+.testimonial-card.is-centered {
+  z-index: 1;
+  scale: var(--spot-scale);
+  border-color: var(--color-accent);
+  box-shadow: var(--spot-glow);
+}
+
+.testimonial-card.is-dimmed {
+  filter: blur(var(--spot-blur));
+  opacity: var(--spot-dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plan-card,
+  .plan-card.is-centered,
+  .plan-price,
+  .plan-check,
+  .testimonial-card {
+    transition: none;
+  }
+
+  .testimonial-card.is-centered {
+    scale: none;
+  }
+
+  .plan-card.is-dimmed,
+  .testimonial-card.is-dimmed {
+    filter: none;
+    opacity: 1;
+  }
 }
 
 /* Scroll reveal: hidden until the element enters the viewport. */
@@ -136,33 +290,46 @@ body {
  * draw over 1.1 s, the rest fades in over 0.4 s, bullets rise one by one.
  * .is-out: the leaving card fades its title, icon and number upwards.
  */
-.stories-card::before {
-  content: attr(data-step);
+/*
+ * The number is an SVG of pre-cleaned glyph outlines (see StepNumber.tsx).
+ * Its box spans the font ascender to descender, so the height and top offset
+ * below reproduce a 220px / line-height 1 text box placed at top -10px.
+ */
+.stories-number {
   position: absolute;
-  top: -10px;
+  top: -50.3px;
   right: 30px;
-  font-size: 220px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.06em;
-  color: transparent;
-  -webkit-text-stroke: 1.5px
-    color-mix(in srgb, var(--color-accent) 25%, transparent);
+  height: 300.5px;
+  width: auto;
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-accent) 25%, transparent);
+  stroke-width: 1.5px;
   pointer-events: none;
 }
 
 @media (max-width: 1023px) {
-  .stories-card::before {
-    top: -8px;
+  /* 130px text box at top -8px. */
+  .stories-number {
+    top: -31.8px;
     right: 12px;
-    font-size: 130px;
-    -webkit-text-stroke-width: 1.2px;
+    height: 177.6px;
+    stroke-width: 1.2px;
+  }
+}
+
+/* The card is narrow here, so a 220px number would run under the title. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  /* 160px text box at top -8px. */
+  .stories-number {
+    top: -37.3px;
+    right: 24px;
+    height: 218.6px;
   }
 }
 
 .stories-card h3,
 .stories-card .stories-icon,
-.stories-card::before {
+.stories-card .stories-number {
   opacity: 0;
   transform: translateY(-8px);
   transition: none;
@@ -182,7 +349,7 @@ body {
 
 .stories-card.is-show h3,
 .stories-card.is-show .stories-icon,
-.stories-card.is-show::before {
+.stories-card.is-show .stories-number {
   opacity: 1;
   transform: none;
   transition:
@@ -205,7 +372,7 @@ body {
 
 .stories-card.is-out h3,
 .stories-card.is-out .stories-icon,
-.stories-card.is-out::before {
+.stories-card.is-out .stories-number {
   opacity: 0;
   transform: translateY(-8px);
   transition:
@@ -214,8 +381,7 @@ body {
 }
 
 /* Reduced motion: everything switches instantly. */
-.stories.is-still *,
-.stories.is-still *::before {
+.stories.is-still * {
   transition: none !important;
 }
 
@@ -227,4 +393,76 @@ body {
 .seam-fade {
   height: 14rem;
   background: linear-gradient(to top, var(--color-surface) 12%, transparent);
+}
+
+/*
+ * How it works: the sticky block keeps all three steps on screen and moves the
+ * highlight between them while the page scrolls. HowItWorks.tsx writes one
+ * variable per card, --w (highlight weight 0…1); everything visual follows it
+ * here so the look can be tuned without touching the script. The static
+ * staircase sets --w: 1 on every card.
+ */
+.step-card {
+  --w: 0;
+  opacity: calc(var(--step-dim) + (1 - var(--step-dim)) * var(--w));
+}
+
+.step-block {
+  /* Opacity of a card that is not highlighted. */
+  --step-dim: 0.4;
+  /* Vertical offset between neighbouring cards in the row. */
+  --step-stair: 3rem;
+  /* Header + heading + text block + staircase: what the photo height must leave room for. */
+  --step-fixed: 34rem;
+}
+
+@media (max-height: 799px) {
+  .step-block {
+    --step-stair: 2rem;
+    --step-fixed: 33rem;
+  }
+}
+
+/* Accent rim and glow around the highlighted photo. */
+.step-photo {
+  border-color: color-mix(
+    in srgb,
+    var(--color-accent) calc(var(--w) * 70%),
+    var(--color-border)
+  );
+  box-shadow:
+    0 0 calc(var(--w) * 48px) calc(var(--w) * -6px) rgb(45 212 191 / 0.7),
+    0 calc(var(--w) * 24px) calc(var(--w) * 48px) calc(var(--w) * -16px)
+      rgb(0 0 0 / 0.8);
+}
+
+.step-photo img {
+  filter: brightness(calc(0.7 + 0.3 * var(--w)));
+}
+
+.step-number {
+  color: color-mix(
+    in srgb,
+    var(--color-accent) calc(var(--w) * 100%),
+    rgb(255 255 255 / 0.18)
+  );
+}
+
+/* Row (md and up): the highlighted card lifts and grows from its bottom edge. */
+.step-row .step-card {
+  transform: translateY(calc(-16px * var(--w))) scale(calc(1 + 0.06 * var(--w)));
+  transform-origin: 50% 100%;
+}
+
+/* List (below md): cards that are not highlighted collapse to number + title. */
+.step-list-photo {
+  height: calc(var(--w) * min(75cqw, 100svh - 34rem));
+  margin-bottom: calc(var(--w) * 0.75rem);
+}
+
+.step-list-text {
+  max-height: calc(var(--w) * 3.5rem);
+  margin-top: calc(var(--w) * 0.75rem);
+  opacity: var(--w);
+  overflow: hidden;
 }

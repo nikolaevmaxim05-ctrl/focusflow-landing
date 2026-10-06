@@ -59,9 +59,13 @@ export const FEATURE_IMAGES = {
   themes: photo("/features/themes.webp"),
 };
 
-/** Photos of the How it works steps. Placeholders: they repeat the carousel photos. */
+/**
+ * Photos of the How it works steps. timer.webp: Unsplash jRKOG8ZJLI0 by Milad
+ * Fakurian (Unsplash License), cropped to 4:3. Steps 2–3 are placeholders that
+ * repeat the carousel photos.
+ */
 export const STEP_IMAGES = {
-  timer: photo("/features/timers.webp"),
+  timer: photo("/how-it-works/timer.webp"),
   sound: photo("/features/sounds.webp"),
   progress: photo("/features/stats.webp"),
 };

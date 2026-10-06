@@ -181,16 +181,15 @@ export function Hero({ hero, ui }: HeroProps) {
 
       <audio ref={audioRef} loop preload="none" />
 
-      {/* Below lg the text column dissolves into the page grid so that below md the demo can sit between the description and the buttons. */}
-      <Container className="relative grid items-center gap-6 max-lg:justify-items-center lg:grid-cols-2 lg:gap-8">
-        <div className="flex flex-col items-center gap-6 text-center max-lg:contents lg:items-start lg:text-left">
+      <Container className="relative grid items-center gap-14 lg:grid-cols-2 lg:gap-8">
+        <div className="flex flex-col items-center gap-6 text-center lg:items-start lg:text-left">
           <h1 className="max-w-xl text-4xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-6xl">
             {hero.title}
           </h1>
           <p className="max-w-lg text-lg text-foreground/80">
             {hero.description}
           </p>
-          <div className="flex w-full flex-col items-stretch gap-3 max-md:order-1 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start">
+          <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start">
             <GooglePlayButton
               href={hero.primaryCta.href}
               label={hero.primaryCta.label}
@@ -206,7 +205,7 @@ export function Hero({ hero, ui }: HeroProps) {
           </div>
         </div>
 
-        <div className="flex w-full justify-center max-md:my-2 md:max-lg:mt-8 lg:justify-end">
+        <div className="flex justify-center lg:justify-end">
           <FocusDemo
             content={mockup}
             ui={ui}

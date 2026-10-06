@@ -18,6 +18,7 @@ const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
 });
 
+
 /** Title, description and links to the other language versions. */
 export function pageMetadata(locale: Locale): Metadata {
   const { site } = getContent(locale);

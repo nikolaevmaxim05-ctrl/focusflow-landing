@@ -164,7 +164,10 @@ export const en: SiteContent = {
       {
         title: "Set your timer",
         description: "Choose how long you want to focus and start a session.",
-        image: { ...STEP_IMAGES.timer, alt: "Hourglass on a wooden table" },
+        image: {
+          ...STEP_IMAGES.timer,
+          alt: "Hourglass with dark sand on a desk in front of a monitor",
+        },
       },
       {
         title: "Pick your sound",

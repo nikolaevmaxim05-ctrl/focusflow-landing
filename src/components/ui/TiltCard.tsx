@@ -84,7 +84,7 @@ export function TiltCard({ children, className = "" }: TiltCardProps) {
       ref={cardRef}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      className={`tilt-card relative hover:border-white/80 hover:shadow-[0_0_2.5rem_rgb(255_255_255/0.18)] ${className}`}
+      className={`tilt-card relative ${className}`}
     >
       <div className="card-gloss-wrap" aria-hidden="true">
         <div ref={glossRef} className="card-gloss" />

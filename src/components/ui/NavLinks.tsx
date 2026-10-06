@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { NavItem } from "@/data/types";
+import { ANCHOR_SCROLL_EVENT, type AnchorScrollDetail } from "./anchorScroll";
 
 interface NavLinksProps {
   items: NavItem[];
@@ -15,11 +16,23 @@ const hoverClassName =
 
 /**
  * Header links. A link lights up on hover, and the link of the section that
- * is currently on screen stays lit.
+ * is currently on screen stays lit. While an anchor scroll is travelling, the
+ * clicked link stays lit instead of the sections passing by.
  */
 export function NavLinks({ items }: NavLinksProps) {
   const [activeHref, setActiveHref] = useState<string | null>(null);
   const [isAtPageEnd, setIsAtPageEnd] = useState(false);
+  const [travellingHref, setTravellingHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onAnchorScroll = (event: Event) => {
+      const { href, phase } = (event as CustomEvent<AnchorScrollDetail>).detail;
+      if (phase === "start") setTravellingHref(href);
+      else setTravellingHref((current) => (current === href ? null : current));
+    };
+    window.addEventListener(ANCHOR_SCROLL_EVENT, onAnchorScroll);
+    return () => window.removeEventListener(ANCHOR_SCROLL_EVENT, onAnchorScroll);
+  }, []);
 
   useEffect(() => {
     const sections = items
@@ -55,7 +68,8 @@ export function NavLinks({ items }: NavLinksProps) {
     };
   }, [items]);
 
-  const currentHref = isAtPageEnd ? items[items.length - 1]?.href : activeHref;
+  const currentHref =
+    travellingHref ?? (isAtPageEnd ? items[items.length - 1]?.href : activeHref);
 
   return (
     <ul className="flex items-center gap-6 xl:gap-8">
