@@ -1,6 +1,5 @@
-import Image from "next/image";
-import { Carousel } from "@/components/ui/Carousel";
 import { Container } from "@/components/ui/Container";
+import { FeatureStories } from "@/components/ui/FeatureStories";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import type { FeaturesContent, UiStrings } from "@/data/types";
 
@@ -9,49 +8,37 @@ interface FeaturesProps {
   ui: UiStrings;
 }
 
+/**
+ * The stories block is wider than the page container, and its photo layer
+ * fills the whole section, so this section lays itself out instead of using
+ * the shared Section component.
+ */
 export function Features({ features, ui }: FeaturesProps) {
   return (
-    <section id="features" className="py-16 md:py-24">
-      <Container>
+    <section
+      id="features"
+      className="relative isolate overflow-x-clip py-16 md:py-24"
+    >
+      <Container className="relative">
         <SectionHeading intro={features.intro} />
       </Container>
-      <div className="mx-auto mt-8 max-w-[100rem]">
-        <Carousel
-          label={features.intro.title}
-          intervalSeconds={features.autoplaySeconds}
-          labels={{
-            previous: ui.previousSlide,
-            next: ui.nextSlide,
-            slideOf: ui.slideOf,
-          }}
-          backgrounds={features.items.map((feature) => (
-            <Image
-              key={feature.title}
-              src={feature.image.src}
-              alt={feature.image.alt}
-              fill
-              sizes="(min-width: 1600px) 1600px, 100vw"
-              className="object-cover"
+      <div className="mt-12">
+        <FeatureStories
+          items={features.items.map((item) => ({
+            title: item.title,
+            bullets: item.bullets,
+            image: item.image,
+          }))}
+          icons={features.items.map((item) => (
+            <item.icon
+              key={item.title}
+              className="size-full"
+              strokeWidth={1.6}
             />
           ))}
-        >
-          {features.items.map((feature) => (
-            <article
-              key={feature.title}
-              className="flex min-h-[26rem] flex-col items-center justify-center gap-4 px-8 py-12 text-center md:min-h-[32rem]"
-            >
-              <span className="flex size-14 items-center justify-center rounded-control bg-accent text-accent-foreground">
-                <feature.icon aria-hidden="true" className="size-7" />
-              </span>
-              <h3 className="mt-2 text-3xl font-extrabold tracking-tight text-balance md:text-5xl">
-                {feature.title}
-              </h3>
-              <p className="max-w-xl text-lg text-foreground/85 md:text-xl">
-                {feature.description}
-              </p>
-            </article>
-          ))}
-        </Carousel>
+          stepSeconds={features.autoplaySeconds}
+          hint={ui.storiesHint}
+        />
       </div>
     </section>
   );

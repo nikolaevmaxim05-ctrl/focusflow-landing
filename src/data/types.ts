@@ -37,14 +37,12 @@ export interface UiStrings {
   language: string;
   openMenu: string;
   closeMenu: string;
-  previousSlide: string;
-  nextSlide: string;
-  /** Slide position; {current} and {total} are replaced with numbers. */
-  slideOf: string;
   /** Demo timer caption; {current} and {total} are replaced with numbers. */
   sessionOf: string;
   pauseTimer: string;
   resumeTimer: string;
+  /** Gesture hint under the Features card on touch screens. */
+  storiesHint: string;
 }
 
 export interface FocusSound {
@@ -53,6 +51,11 @@ export interface FocusSound {
   audio: string;
   /** Background video from /public, shown while the sound is selected. */
   video: string;
+  /**
+   * Loudness correction so that all sounds play at the same level: 1 for the
+   * loudest file, higher for quieter ones. Multiplies the shared volume.
+   */
+  gain: number;
 }
 
 export interface PhoneMockupContent {
@@ -87,8 +90,9 @@ export interface Feature {
   /** Any icon exported by lucide-react (https://lucide.dev/icons). */
   icon: LucideIcon;
   title: string;
-  description: string;
-  /** Background picture shown behind the slide, from /public. */
+  /** Three or four short points shown in the open card. */
+  bullets: string[];
+  /** Photo shown behind the open card, from /public. */
   image: ImageAsset;
 }
 

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Container } from "@/components/ui/Container";
 import { GooglePlayButton } from "@/components/ui/GooglePlayButton";
-import { PhoneMockup } from "@/components/ui/PhoneMockup";
+import { FocusDemo } from "@/components/ui/FocusDemo";
 import type { HeroContent, UiStrings } from "@/data/types";
 
 interface HeroProps {
@@ -12,14 +12,33 @@ interface HeroProps {
   ui: UiStrings;
 }
 
-/** Volume of the focus sounds, from 0 to 1. */
-const SOUND_VOLUME = 0.6;
+/** Volume of the loudest focus sound, from 0 to 1. Each sound multiplies it by its own gain. */
+const SOUND_VOLUME = 0.03;
+
+/** How long a focus sound takes to rise from silence to its volume, in ms. */
+const SOUND_FADE_MS = 1000;
+
+/** How often the volume is raised during the fade-in, in ms. */
+const SOUND_FADE_STEP_MS = 30;
 
 /** Length of the cross-fade between background videos, in ms. Matches duration-1000. */
 const FADE_MS = 1000;
 
 const videoClassName =
   "absolute inset-0 size-full object-cover transition-opacity duration-1000";
+
+/**
+ * Props shared by every decorative background video. Picture-in-picture and
+ * remote playback are disabled so browsers do not draw their own hover
+ * controls (PiP, scrubbing) over the hero.
+ */
+const backgroundVideoProps = {
+  muted: true,
+  loop: true,
+  playsInline: true,
+  disablePictureInPicture: true,
+  disableRemotePlayback: true,
+} as const;
 
 /**
  * Hero with a live demo: the phone timer counts down from page load and the
@@ -38,6 +57,7 @@ export function Hero({ hero, ui }: HeroProps) {
   /** Sounds whose video has loaded enough to be faded in. */
   const [readyVideos, setReadyVideos] = useState<string[]>([]);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const soundFade = useRef(0);
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   // Countdown: one tick per second while running; a finished session starts the next one.
@@ -83,11 +103,31 @@ export function Hero({ hero, ui }: HeroProps) {
     return () => window.clearTimeout(timer);
   }, [activeSound]);
 
+  useEffect(() => () => window.clearInterval(soundFade.current), []);
+
+  /** Raises the volume from silence to the target over SOUND_FADE_MS. */
+  const fadeIn = (audio: HTMLAudioElement, target: number) => {
+    window.clearInterval(soundFade.current);
+    const startedAt = performance.now();
+
+    const tick = () => {
+      const progress = Math.min(
+        (performance.now() - startedAt) / SOUND_FADE_MS,
+        1,
+      );
+      audio.volume = target * progress;
+      if (progress >= 1) window.clearInterval(soundFade.current);
+    };
+    audio.volume = 0;
+    soundFade.current = window.setInterval(tick, SOUND_FADE_STEP_MS);
+  };
+
   const handleSelectSound = (name: string) => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (name === activeSound) {
+      window.clearInterval(soundFade.current);
       audio.pause();
       setActiveSound(null);
       return;
@@ -97,20 +137,22 @@ export function Hero({ hero, ui }: HeroProps) {
     if (!sound) return;
 
     audio.src = sound.audio;
-    audio.volume = SOUND_VOLUME;
+    fadeIn(audio, Math.min(1, SOUND_VOLUME * sound.gain));
     void audio.play();
     setActiveSound(name);
   };
 
   return (
     <section className="relative overflow-hidden py-16 md:py-24">
-      <div ref={backgroundRef} aria-hidden="true" className="absolute inset-0">
+      <div
+        ref={backgroundRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+      >
         <video
           src={hero.backgroundVideo}
           autoPlay
-          muted
-          loop
-          playsInline
+          {...backgroundVideoProps}
           className="absolute inset-0 size-full object-cover"
         />
         {/* Sound videos sit on top of the default one and fade in once loaded, so there is never a blank frame. */}
@@ -119,9 +161,7 @@ export function Hero({ hero, ui }: HeroProps) {
             key={sound.name}
             data-sound={sound.name}
             src={sound.video}
-            muted
-            loop
-            playsInline
+            {...backgroundVideoProps}
             preload="none"
             onCanPlay={() =>
               setReadyVideos((names) =>
@@ -141,15 +181,16 @@ export function Hero({ hero, ui }: HeroProps) {
 
       <audio ref={audioRef} loop preload="none" />
 
-      <Container className="relative grid items-center gap-14 lg:grid-cols-2 lg:gap-8">
-        <div className="flex flex-col items-center gap-6 text-center lg:items-start lg:text-left">
+      {/* Below lg the text column dissolves into the page grid so that below md the demo can sit between the description and the buttons. */}
+      <Container className="relative grid items-center gap-6 max-lg:justify-items-center lg:grid-cols-2 lg:gap-8">
+        <div className="flex flex-col items-center gap-6 text-center max-lg:contents lg:items-start lg:text-left">
           <h1 className="max-w-xl text-4xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-6xl">
             {hero.title}
           </h1>
           <p className="max-w-lg text-lg text-foreground/80">
             {hero.description}
           </p>
-          <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start">
+          <div className="flex w-full flex-col items-stretch gap-3 max-md:order-1 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-center lg:justify-start">
             <GooglePlayButton
               href={hero.primaryCta.href}
               label={hero.primaryCta.label}
@@ -165,8 +206,8 @@ export function Hero({ hero, ui }: HeroProps) {
           </div>
         </div>
 
-        <div className="flex justify-center lg:justify-end">
-          <PhoneMockup
+        <div className="flex w-full justify-center max-md:my-2 md:max-lg:mt-8 lg:justify-end">
+          <FocusDemo
             content={mockup}
             ui={ui}
             remainingSeconds={remainingSeconds}

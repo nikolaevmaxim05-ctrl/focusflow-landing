@@ -23,7 +23,7 @@ export function HowItWorks({ howItWorks }: HowItWorksProps) {
   return (
     <Section
       id="how-it-works"
-      className="overflow-hidden border-y border-border bg-surface"
+      className="overflow-hidden border-b border-border bg-surface"
     >
       <SectionHeading intro={howItWorks.intro} />
       <ol className="mt-16 flex flex-col gap-16 md:gap-0">

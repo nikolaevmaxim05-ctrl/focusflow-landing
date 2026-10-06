@@ -46,12 +46,10 @@ export const en: SiteContent = {
     language: "Language",
     openMenu: "Open menu",
     closeMenu: "Close menu",
-    previousSlide: "Previous slide",
-    nextSlide: "Next slide",
-    slideOf: "{current} of {total}",
     sessionOf: "Session {current} of {total}",
     pauseTimer: "Pause timer",
     resumeTimer: "Resume timer",
+    storiesHint: "Tap right — next · left — back · hold — pause",
   },
 
   hero: {
@@ -85,15 +83,21 @@ export const en: SiteContent = {
       {
         icon: Timer,
         title: "Smart focus timers",
-        description:
-          "Customizable focus sessions with quick switching between work and breaks.",
+        bullets: [
+          "Customizable session length",
+          "Quick session switching when plans change",
+          "Clear countdown you can read at a glance",
+        ],
         image: { ...FEATURE_IMAGES.timers, alt: "Hourglass on a wooden table" },
       },
       {
         icon: Sparkles,
         title: "Distraction-free design",
-        description:
-          "A clean, minimal interface that keeps your attention on the task.",
+        bullets: [
+          "Clean, minimal interface",
+          "Nothing on screen competes for your attention",
+          "Start a session in two taps",
+        ],
         image: {
           ...FEATURE_IMAGES.design,
           alt: "Tidy white desk with books and a vase",
@@ -102,8 +106,11 @@ export const en: SiteContent = {
       {
         icon: ChartColumn,
         title: "History and stats",
-        description:
-          "Session history and focus time statistics show where your hours go.",
+        bullets: [
+          "Full session history",
+          "Focus time statistics by day",
+          "Watch your total hours grow",
+        ],
         image: {
           ...FEATURE_IMAGES.stats,
           alt: "Analytics charts on a laptop screen",
@@ -112,8 +119,11 @@ export const en: SiteContent = {
       {
         icon: Headphones,
         title: "Focus sounds",
-        description:
-          "Layer built-in sounds to create the background that helps you concentrate.",
+        bullets: [
+          "Built-in ambient sounds",
+          "Custom sound layers for deeper concentration",
+          "Pick a mood for every session",
+        ],
         image: {
           ...FEATURE_IMAGES.sounds,
           alt: "Headphones surrounded by string lights",
@@ -122,8 +132,11 @@ export const en: SiteContent = {
       {
         icon: Flame,
         title: "Points and streaks",
-        description:
-          "Earn points for every session and keep your streak alive.",
+        bullets: [
+          "Points system for your productivity",
+          "Track your streaks day by day",
+          "Progress you can see, not just feel",
+        ],
         image: {
           ...FEATURE_IMAGES.streaks,
           alt: "High scores list on a retro arcade screen",
@@ -132,8 +145,11 @@ export const en: SiteContent = {
       {
         icon: Palette,
         title: "Personal themes",
-        description:
-          "Adjust settings and the app theme to fit the way you work.",
+        bullets: [
+          "Personalize the app theme",
+          "Adjust settings to the way you work",
+          "Your focus space, your rules",
+        ],
         image: {
           ...FEATURE_IMAGES.themes,
           alt: "Fan deck of colorful paper swatches",

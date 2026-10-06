@@ -24,6 +24,8 @@ export function Footer({ footer, site }: FooterProps) {
                 <li key={social.network}>
                   <a
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     aria-label={social.label}
                     className="flex size-10 items-center justify-center rounded-full border border-border text-muted transition-all duration-300 hover:border-accent hover:text-accent hover:shadow-[0_0_18px_-2px_rgb(45_212_191/0.7)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-hover"
                   >

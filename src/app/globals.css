@@ -35,6 +35,12 @@
 html {
   /* Keeps anchor targets clear of the sticky header. */
   scroll-padding-top: 5rem;
+  /* Hides the page scrollbar; scrolling itself keeps working. */
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -42,12 +48,59 @@ body {
   color: var(--color-foreground);
 }
 
-/* Fades all four edges of an element into whatever is behind it. */
+/*
+ * Fades the left, right and top edges of an element into whatever is behind
+ * it. The bottom edge is left alone: the section below owns that transition.
+ */
 .soft-edges {
   mask-image:
     linear-gradient(to right, transparent, black 8%, black 92%, transparent),
-    linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+    linear-gradient(to bottom, transparent, black 8%, black 100%);
   mask-composite: intersect;
+}
+
+/*
+ * Tilt card (TiltCard.tsx). The transform snaps after the cursor while hovered
+ * and settles back slowly once it leaves; outline and glow keep one pace.
+ */
+.tilt-card {
+  transition:
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s ease-out,
+    box-shadow 0.2s ease-out;
+}
+
+.tilt-card:hover {
+  transition-duration: 0.12s, 0.2s, 0.2s;
+  transition-timing-function: ease-out;
+}
+
+/* Gloss that slides away from the cursor. Only this wrapper clips, so the
+   card's own outline and glow stay intact. */
+.card-gloss-wrap {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.card-gloss {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-accent) 50%, transparent) 0%,
+    transparent 50%,
+    transparent 100%
+  );
+  transition: opacity 0.2s ease-out;
+  will-change: opacity, transform;
 }
 
 /* Scroll reveal: hidden until the element enters the viewport. */
@@ -70,4 +123,108 @@ body {
     transform: none;
     transition: none;
   }
+}
+
+/*
+ * Features "stories" block. Layout classes live in FeatureStories.tsx; these
+ * rules cover what Tailwind cannot express: the outlined step number drawn
+ * with a pseudo-element, the icon that draws itself and the enter/leave states.
+ *
+ * A card has three states. Hidden (no class): title, icon and number are
+ * invisible and the icon strokes are fully "undrawn", with no transition, so
+ * the card is ready to enter. .is-show: everything transitions in - strokes
+ * draw over 1.1 s, the rest fades in over 0.4 s, bullets rise one by one.
+ * .is-out: the leaving card fades its title, icon and number upwards.
+ */
+.stories-card::before {
+  content: attr(data-step);
+  position: absolute;
+  top: -10px;
+  right: 30px;
+  font-size: 220px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px
+    color-mix(in srgb, var(--color-accent) 25%, transparent);
+  pointer-events: none;
+}
+
+@media (max-width: 1023px) {
+  .stories-card::before {
+    top: -8px;
+    right: 12px;
+    font-size: 130px;
+    -webkit-text-stroke-width: 1.2px;
+  }
+}
+
+.stories-card h3,
+.stories-card .stories-icon,
+.stories-card::before {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: none;
+}
+
+.stories-card .stories-icon svg * {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: none;
+}
+
+.stories-card li {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: none;
+}
+
+.stories-card.is-show h3,
+.stories-card.is-show .stories-icon,
+.stories-card.is-show::before {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.4s,
+    transform 0.4s;
+}
+
+.stories-card.is-show .stories-icon svg * {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1.1s cubic-bezier(0.6, 0, 0.2, 1);
+}
+
+.stories-card.is-show li {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.45s,
+    transform 0.45s;
+}
+
+.stories-card.is-out h3,
+.stories-card.is-out .stories-icon,
+.stories-card.is-out::before {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.4s,
+    transform 0.4s;
+}
+
+/* Reduced motion: everything switches instantly. */
+.stories.is-still *,
+.stories.is-still *::before {
+  transition: none !important;
+}
+
+/*
+ * Bottom of the Features photo: fades into the colour of the section below
+ * (How it works, surface). Fully opaque for the last 12% so no photo detail
+ * touches the edge.
+ */
+.seam-fade {
+  height: 14rem;
+  background: linear-gradient(to top, var(--color-surface) 12%, transparent);
 }
