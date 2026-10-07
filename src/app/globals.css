@@ -454,14 +454,29 @@ body {
   transform-origin: 50% 100%;
 }
 
-/* List (below md): cards that are not highlighted collapse to number + title. */
+/*
+ * List (below md): cards that are not highlighted collapse to number + title.
+ * Softer contrast than the row: the list fills a phone screen, so dimmed cards
+ * stay readable. HowItWorks.tsx measures --step-text (height of a description)
+ * and --step-photo-max (tallest photo that still fits the stuck block).
+ */
+.step-list {
+  --step-dim: 0.6;
+  /* The cards change height on every frame of a hand-over: keep that reflow inside the list. */
+  contain: layout paint;
+}
+
+.step-list .step-photo img {
+  filter: brightness(calc(0.8 + 0.2 * var(--w)));
+}
+
 .step-list-photo {
-  height: calc(var(--w) * min(75cqw, 100svh - 34rem));
+  height: calc(var(--w) * min(75cqw, var(--step-photo-max, 100svh - 27rem)));
   margin-bottom: calc(var(--w) * 0.75rem);
 }
 
 .step-list-text {
-  max-height: calc(var(--w) * 3.5rem);
+  max-height: calc(var(--w) * var(--step-text, 4.5rem));
   margin-top: calc(var(--w) * 0.75rem);
   opacity: var(--w);
   overflow: hidden;
